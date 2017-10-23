@@ -15,22 +15,28 @@
 #### Pseudo Code
 
 ```js
-	var sw = new SimpleWorker();
-	
-	var pid = sw.prepare(function(w,h){
-		var canvas = document.createElement('canvas');
-		var ctx = canvas.getContext('2d');
-		canvas.width = w;
-		canvas.height = h;
-		ctx.fillStyle = 'red';
-		ctx.fillRect(0,0,w,h);
-		ctx.fill();
-		var data = ctx.getImageData(0,0,w,h);
-	  return data.data;
-	}, 500, 500)
-	sw.execute(pid, function(e){
-		console.log('finished in ' + (((new Date()).getSeconds() - start.getSeconds()) / 1000) + "s");
-		console.log(arguments);
-	})
-	
+var sw = new SimpleWorker();
+
+var w,h;
+w = h = 500;
+
+var pid = sw.prepare(function (w, h) {
+    var canvas = document.createElement('canvas');
+    var ctx = canvas.getContext('2d');
+    canvas.width = w;
+    canvas.height = h;
+    ctx.fillStyle = 'red';
+    ctx.fillRect(0, 0, w, h);
+    ctx.fill();
+    return (ctx.getImageData(0, 0, w, h)).data;
+}, w, h);
+
+sw.importScript(pid, []); // import libraries
+
+var start = new Date();
+
+sw.execute(pid, function (e) {
+    console.log('finished in ' + (((new Date()).getSeconds() - start.getSeconds()) / 1000) + "s");
+    console.log(arguments);
+})
 ```
